@@ -157,16 +157,18 @@ class AgentPromptRequest(BaseModel):
 
 
 class AgentPromptResponse(BaseModel):
-    """Claude Code agent response."""
+    """Claude Code agent response with ECE metrics."""
 
     output: str
     success: bool
     session_id: Optional[str] = None
     retry_code: RetryCode = RetryCode.NONE
+    output_tokens: Optional[int] = None  # ECE: Estimated output tokens for metrics
+    total_cost_usd: Optional[float] = None  # ECE: Total cost from Claude Code
 
 
 class AgentTemplateRequest(BaseModel):
-    """Claude Code agent template execution request."""
+    """Claude Code agent template execution request with ECE integration."""
 
     agent_name: str
     slash_command: SlashCommand
@@ -174,6 +176,8 @@ class AgentTemplateRequest(BaseModel):
     adw_id: str
     model: Literal["sonnet", "opus"] = "sonnet"
     working_dir: Optional[str] = None
+    output_style: Optional[str] = None  # ECE: Output style name (e.g., "concise-ultra")
+    context_handoff: Optional[dict] = None  # ECE: Minimal context from previous phase
 
 
 class ClaudeCodeResultMessage(BaseModel):

@@ -515,12 +515,18 @@ def execute_template(request: AgentTemplateRequest) -> AgentPromptResponse:
     1. The slash command being executed
     2. The model_set stored in the ADW state (base or heavy)
 
+    ECE Integration:
+    - Supports output_style for token optimization (e.g., "concise-ultra")
+    - Supports context_handoff for minimal inter-phase context passing
+
     Example:
         request = AgentTemplateRequest(
             agent_name="planner",
             slash_command="/implement",
             args=["plan.md"],
-            adw_id="abc12345"
+            adw_id="abc12345",
+            output_style="concise-ultra",  # ECE: Optimize output tokens
+            context_handoff={"plan_file": "specs/plan.md"}  # ECE: Minimal context
         )
         # If state has model_set="heavy", this will use "opus"
         # If state has model_set="base" or missing, this will use "sonnet"
@@ -532,6 +538,16 @@ def execute_template(request: AgentTemplateRequest) -> AgentPromptResponse:
 
     # Construct prompt from slash command and args
     prompt = f"{request.slash_command} {' '.join(request.args)}"
+
+    # ECE Integration: Add output style instruction if specified
+    if request.output_style:
+        prompt += f" --output-style .claude/output-styles/{request.output_style}.md"
+
+    # ECE Integration: Add context handoff as system prompt if specified
+    if request.context_handoff:
+        context_json = json.dumps(request.context_handoff, indent=2)
+        context_instruction = f"\n\nPrevious phase context:\n{context_json}\n\nUse this minimal context from the previous workflow phase."
+        prompt += f' --append-system-prompt "{context_instruction}"'
 
     # Create output directory with adw_id at project root
     # __file__ is in adws/adw_modules/, so we need to go up 3 levels to get to project root
@@ -557,5 +573,20 @@ def execute_template(request: AgentTemplateRequest) -> AgentPromptResponse:
         working_dir=request.working_dir,  # Pass through working_dir
     )
 
-    # Execute with retry logic and return response (prompt_claude_code now handles all parsing)
-    return prompt_claude_code_with_retry(prompt_request)
+    # Execute with retry logic and get response
+    response = prompt_claude_code_with_retry(prompt_request)
+
+    # ECE Integration: Extract cost metrics from Claude Code result
+    if response.success and response.session_id:
+        try:
+            # Parse the JSONL file to get cost data
+            messages, result_message = parse_jsonl_output(output_file)
+            if result_message:
+                response.total_cost_usd = result_message.get("total_cost_usd")
+                # Estimate output tokens from result text (rough estimate: ~4 chars per token)
+                if response.output:
+                    response.output_tokens = len(response.output) // 4
+        except:
+            pass  # Don't fail if we can't extract metrics
+
+    return response
