@@ -46,6 +46,10 @@ SLASH_COMMAND_MODEL_MAP: Final[Dict[SlashCommand, Dict[ModelSet, str]]] = {
     "/patch": {"base": "sonnet", "heavy": "opus"},
     "/install_worktree": {"base": "sonnet", "heavy": "sonnet"},
     "/track_agentic_kpis": {"base": "sonnet", "heavy": "sonnet"},
+    # Agent Expert commands
+    "/expert_invoice_plan": {"base": "sonnet", "heavy": "opus"},
+    "/expert_invoice_build": {"base": "sonnet", "heavy": "opus"},
+    "/expert_invoice_improve": {"base": "sonnet", "heavy": "sonnet"},
 }
 
 

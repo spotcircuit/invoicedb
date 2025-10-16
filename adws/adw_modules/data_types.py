@@ -66,6 +66,10 @@ SlashCommand = Literal[
     "/track_agentic_kpis",
     # Installation/setup commands
     "/install_worktree",
+    # Agent Expert commands
+    "/expert_invoice_plan",
+    "/expert_invoice_build",
+    "/expert_invoice_improve",
 ]
 
 
