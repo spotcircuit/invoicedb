@@ -31,16 +31,23 @@ Do NOT create or checkout any branches - just generate the name.
 
 ## Report
 
-CRITICAL: Return ONLY the branch name itself. No explanations, no descriptions, no markdown, no extra text whatsoever.
+CRITICAL: Return ONLY the branch name itself as plain text.
 
-Example CORRECT output:
+DO NOT include:
+- Markdown code blocks (no ```)
+- Explanations
+- Descriptions
+- Extra text
+
+CORRECT output (plain text only):
+feature-issue-2-adw-abc12345-invoice-extraction-system
+
+WRONG output (DO NOT DO THIS):
 ```
 feature-issue-2-adw-abc12345-invoice-extraction-system
 ```
 
-Example WRONG output (DO NOT DO THIS):
-```
+Or:
 Based on the issue, here's the branch name: feature-issue-2...
-```
 
-Output format: Plain text, single line, branch name only.
+Output format: Plain text only, single line, branch name only, no markdown formatting.
