@@ -31,4 +31,16 @@ Do NOT create or checkout any branches - just generate the name.
 
 ## Report
 
-Return ONLY the generated branch name (no other text)
+CRITICAL: Return ONLY the branch name itself. No explanations, no descriptions, no markdown, no extra text whatsoever.
+
+Example CORRECT output:
+```
+feature-issue-2-adw-abc12345-invoice-extraction-system
+```
+
+Example WRONG output (DO NOT DO THIS):
+```
+Based on the issue, here's the branch name: feature-issue-2...
+```
+
+Output format: Plain text, single line, branch name only.
